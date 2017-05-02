@@ -1,10 +1,6 @@
-# Transposon Insertion Frequency Prediction using a Artificial Neural Netowkr
+# Transposon Insertion Frequency Prediction using an Artificial Neural Network
 
 Paragraph describing the scope of the software will be added shortly.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
 
 ## Authors
 
