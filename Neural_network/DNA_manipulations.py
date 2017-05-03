@@ -2,7 +2,6 @@ import csv
 import numpy as np
 import copy
 
-#test update
 def array(file):
 	"""
 	Imports a csv of DNA sequences and inserts them into an array
