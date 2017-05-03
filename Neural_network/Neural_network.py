@@ -185,7 +185,7 @@ def percent_identity(desiredOutput, recalledOutput):
 
     return np.sum(equalityVector)/float(m)
 
-#OneHot Encoding 
+#OneHot Encoding Modifications
 # categorize frequency inputs into n number of bins between two values - one hot encoding 
 #   maxiumum number of bins is 16.
 def categorize(x, stdev, nbins = 10):
