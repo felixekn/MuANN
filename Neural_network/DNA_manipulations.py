@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import copy
 
-
+#test update
 def array(file):
 	"""
 	Imports a csv of DNA sequences and inserts them into an array
@@ -258,6 +258,58 @@ def roll(sequence, recLength = 5, overhang = 12, window = 3,
 
 	return bpRoll, runningAverage[start-overhang:end+overhang], normalize[start-overhang:end+overhang]
 
+def dinucleotide(sequence):
+	"""
+	Takes a DNA sequence and converts it into a list of floats based on the dinucleotide pairs
+	where G = 0010, C = 0.5, T = -0.5, A = -1
+	"""
+	frog = []
+
+	for i in range(0,(len(sequence)-1)):
+		bp = sequence[i]
+		bp_next = sequence[i+1]
+		bp = bp.capitalize()
+		bp_next = bp_next.capitalize()
+
+		if bp == 'A':
+			if bp_next == 'A':
+				frog.append([-1,-1,-1,-1])
+			elif bp_next == 'C':
+				frog.append([-1,-1,-1,1])
+			elif bp_next == 'G':
+				frog.append([-1,-1,1,-1])
+			elif bp_next == 'T':
+				frog.append([-1,-1,1,1])
+		elif bp == 'C':
+			if bp_next == 'A':
+				frog.append([-1,1,-1,-1])
+			elif bp_next == 'C':
+				frog.append([-1,1,-1,1])
+			elif bp_next == 'G':
+				frog.append([-1,1,1,-1])
+			elif bp_next == 'T':
+				frog.append([-1,1,1,1])
+		elif bp == 'G':
+			if bp_next == 'A':
+				frog.append([1,-1,-1,-1])
+			elif bp_next == 'C':
+				frog.append([1,-1,-1,1])
+			elif bp_next == 'G':
+				frog.append([1,-1,1,-1])
+			elif bp_next == 'T':
+				frog.append([1,-1,1,1])
+		elif bp == 'T':
+			if bp_next == 'A':
+				frog.append([1,1,-1,-1])
+			elif bp_next == 'C':
+				frog.append([1,1,-1,1])
+			elif bp_next == 'G':
+				frog.append([1,1,1,-1])
+			elif bp_next == 'T':
+				frog.append([1,1,1,1])
+	frog = np.array(frog).flatten()
+
+	return frog
 
 def reverseCompliment(sequence):
 	"""
