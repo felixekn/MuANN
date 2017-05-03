@@ -185,53 +185,50 @@ def percent_identity(desiredOutput, recalledOutput):
 
     return np.sum(equalityVector)/float(m)
 
-# categorize frequency inputs into n number of bins between two values.
+#OneHot Encoding 
+# categorize frequency inputs into n number of bins between two values - one hot encoding 
 #   maxiumum number of bins is 16.
-def categorize(x, minVal, maxVal, nbins = 10):
+def categorize(x, stdev, nbins = 10):
     categorizedInput = []
     binnedInput = []
 
     # threshold decides what category x goes into
-    threshold = (maxVal - minVal)/nbins
+    lb = preprocessing.MultiLabelBinarizer()
+    lb.fit([range(0, nbins+1)])
 
     # 16 total possible categories. ex [-1, -1, -1, 1]
-    categories = [list(c) for c in itertools.product([-0.9,0.9],repeat=4)]
+    # categories = [list(c) for c in itertools.product([-0.9,0.9],repeat=4)]
 
     for val in x:
-        binNum = int(np.minimum(np.ceil(val / float(threshold))+1, nbins))
-        categorizedInput.append(categories[binNum-1])
+        binNum = int(np.minimum(np.ceil(val / float(stdev)), nbins))
+        categorizedInput.append(lb.transform([[binNum]])[0])
         binnedInput.append(binNum)
 
     return np.array(categorizedInput), np.array(binnedInput)
 
-
 # converts the categorized output data (16 possible categories) into bin values
-#   spanning [0,16] where 0 means not correctly binned.
+#   spanning [0,16] where 0 means not correctly binned. OneHot Encoding
 def categoriesToBins(x, nbins = 10):
     binnedValues = []
 
-    # 16 total possible categories. ex [-1, -1, -1, 1]
-    categories = [list(c) for c in itertools.product([-0.9,0.9],repeat=4)]
-
-    for val in x:
-        binNum = categories.index(list(val)) + 1
-        if binNum > nbins:
-            binNum = 0
-        binnedValues.append(binNum)
-
-    return np.array(binnedValues)
+    lb = preprocessing.MultiLabelBinarizer()
+    lb.fit([range(0, nbins+1)])
+    binnedValues = lb.inverse_transform(x) 
+    binnedValues = np.array(binnedValues[::]).flatten()
+    return binnedValues
 
 
-def threshold(x):
+def threshold(x): #OneHot Encoding
     m, n = x.shape
-    threshold = np.zeros((m,n))
-    for i in range(m):
-        for j in range(n):
-            if x[i,j] < 0:
-                threshold[i,j] = -0.9
-            elif x[i,j] >= 0:
-                threshold[i,j] = 0.9
+    threshold = []
+    for i in x:
+        i = np.array(i)
+        vec = np.zeros(i.shape)
+        maxVal = max(i)
+        vec[i == maxVal] = 1
+        threshold.append(vec)
 
+    threshold = np.array(threshold)
     return threshold
 
 def tabularLearning(learningRate, k, totalSteps):
