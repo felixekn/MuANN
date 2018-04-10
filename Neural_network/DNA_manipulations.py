@@ -13,7 +13,7 @@ def array(file):
 		fileReader = csv.reader(csv_file, delimiter = "|")
 		fileReader.next() # throwaway header row
 
-	  	for row in fileReader:
+		for row in fileReader:
 			strippedRow = row[0].strip(",").split(',')
 			sequences.append(strippedRow[1])
 			recSite.append(strippedRow[2])

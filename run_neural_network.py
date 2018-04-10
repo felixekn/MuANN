@@ -14,7 +14,7 @@ import Neural_network.Neural_network as network
 networkLayers = [63,40,4]
 slope = 1    # tanh slope
 eta = 0.025   # learning rate
-n = 1000     # learning steps
+n = 50000     # learning steps
 tol = 0.99  # hit rate
 batch = False # batch training, if false = inline training
 alpha = 0.7 # influence of momentum
@@ -23,20 +23,22 @@ weights = network.initialize_weights(networkLayers, 0.5)
 
 # inporting training data
 print('Importing Data...')
-DNA_GsAK, recSite_GsAK, freq_GsAK = DNAm.array("sixtyninemers_frequencies_GsAK.csv")
-DNA_TnAK, recSite_TnAK, freq_TnAK = DNAm.array("sixtyninemers_frequencies_TnAK.csv")
-DNA_BsAK, recSite_BsAK, freq_BsAK = DNAm.array("sixtyninemers_frequencies_BsAK.csv")
-DNA_BgAK, recSite_BgAK, freq_BgAK = DNAm.array("sixtyninemers_frequencies_BgAK.csv")
+DNA_GsAK, recSite_GsAK, freq_GsAK = DNAm.array("Data/GsAK_unselected_NucleotidePositionCounts.csv")
+DNA_TnAK, recSite_TnAK, freq_TnAK = DNAm.array("Data/TnAK_unselected_NucleotidePositionCounts.csv")
+DNA_BsAK, recSite_BsAK, freq_BsAK = DNAm.array("Data/BsAK_unselected_NucleotidePositionCounts.csv")
+DNA_BgAK, recSite_BgAK, freq_BgAK = DNAm.array("Data/BgAK_unselected_NucleotidePositionCounts.csv")
 
 # Training and test outputs
-freq = np.array([[x] for x in freq_GsAK[0:600] + freq_BsAK[0:600] + freq_BgAK[0:600]])
+freq = np.array([[x] for x in freq_GsAK + freq_BsAK + freq_BgAK])
+freqTest = np.array([[x] for x in freq_TnAK])
+
+#Scale data
 scaledTrainingOutput, binendTainingOutput = network.categorize(freq, 0, 15000, 10)
-freqTest = np.array([[x] for x in freq_TnAK[0:600]])
 scaledTestOutput, binendTestOutput = network.categorize(freqTest, 0, 15000, 10)
 
 # Training and test input data
-DNA = DNA_GsAK[0:600] + DNA_BsAK[0:600] + DNA_BgAK[0:600]
-DNATest = DNA_TnAK[0:600]
+DNA = DNA_GsAK + DNA_BsAK + DNA_BgAK
+DNATest = DNA_TnAK
 
 GC_averageTraining = [DNAm.GC_content(seq, overhang = 7)[2] for seq in DNA]
 GC_averageTest = [DNAm.GC_content(seq, overhang = 7)[2] for seq in DNATest]
@@ -69,12 +71,7 @@ scaledTestInput = testData
 
 # Training ANN
 print("Training neural net...")
-weightsTraining, \
-totalStepsTraining, \
-errorTraining = network.BP_learn(scaledTrainingInput, scaledTrainingOutput,
-                         scaledTestInput, scaledTestOutput,
-                         networkLayers, slope, eta, n, tol,
-                         weights, batch, alpha, decay)
+weightsTraining, totalStepsTraining, errorTraining = network.BP_learn(scaledTrainingInput, scaledTrainingOutput, scaledTestInput, scaledTestOutput, networkLayers, slope, eta, n, tol, weights, batch, alpha, decay)
 
 # Recall output from trained ANN
 print("Recalling training data from neural net...")
@@ -113,14 +110,14 @@ figWidth = 14
 figHeight = 8
 fig = pp.figure(figsize=(figWidth, figHeight))
 ax2 = pp.subplot(2,3,1)
-ax2.bar(range(200), binendTainingOutput[0:200], width = 1)
+ax2.bar(range(len(binendTainingOutput)), binendTainingOutput, width = 1)
 ax2.bar([85], binendTainingOutput[85], width = 1,  color = '#F9690E')
 ax2.set_title("Scaled training Mu insertion frequencies")
 ax2.set_ylabel("Scaled insertion rate (au)")
 ax2.set_xlabel('Unique sequence')
 
 ax3 = pp.subplot(2,3,2)
-ax3.bar(range(200), binnedRecallTraining[0:200], width = 1)
+ax3.bar(range(len(binnedRecallTraining)), binnedRecallTraining, width = 1)
 ax3.bar([85], binnedRecallTraining[85], width = 1,  color = '#F9690E')
 ax3.set_title("Recalled scaled training Mu insertion frequencies")
 ax3.set_ylabel("Scaled insertion rate (au)")
@@ -128,14 +125,14 @@ ax3.set_xlabel('Unique sequence')
 ax3.set_ylim([ax2.get_ylim()[0], ax2.get_ylim()[1]])
 
 ax4 = pp.subplot(2,3,4)
-ax4.bar(range(200), binendTestOutput[0:200], width = 1, color = "#8E44AD")
+ax4.bar(range(len(binendTestOutput)), binendTestOutput, width = 1, color = "#8E44AD")
 ax4.bar([97], binendTestOutput[97], width = 1, color = '#F9690E')
 ax4.set_ylabel("Scaled insertion rate (au)")
 ax4.set_xlabel('Unique sequence')
 ax4.set_title("Scaled test Mu insertion frequencies")
 
 ax5 = pp.subplot(2,3,5)
-ax5.bar(range(200), binnedRecallTest[0:200], width = 1, color = "#8E44AD")
+ax5.bar(range(len(binnedRecallTest)), binnedRecallTest, width = 1, color = "#8E44AD")
 ax5.bar([97], binnedRecallTest[97], width = 1,  color = '#F9690E')
 ax5.set_title("Recalled scaled test Mu insertion frequencies")
 ax5.set_ylabel("Scaled insertion rate (au)")
