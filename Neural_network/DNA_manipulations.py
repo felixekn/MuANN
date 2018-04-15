@@ -324,31 +324,59 @@ def reverseCompliment(sequence):
 	compliment = ''.join(complimentArray)
 	return compliment
 
+## old Encoding method 
+# def DNA_encoding(sequence, recLength = 5, overhang = 0):
+# 	"""
+# 	Takes a DNA sequence and converts it into a list of floats
+# 	where G = [-1,1], C = [1,-1], T = [1,1], A = [-1,-1]
+# 	"""
+# 	encoding = []
+
+# 	for bp in sequence:
+# 		bp = bp.capitalize()
+# 		if bp == 'A':
+# 			encoding.append([-1,-1])
+# 		elif bp == 'C':
+# 			encoding.append([1,-1])
+# 		elif bp == 'G':
+# 			encoding.append([-1,1])
+# 		elif bp == 'T':
+# 			encoding.append([1,1])
+
+# 	# pulling out feature indecies
+# 	middle = len(encoding)/2 + len(encoding)%2 - 1
+# 	start = middle - recLength/2
+# 	end = middle + recLength/2 + 1
+
+# 	encoding = np.array(encoding[start-overhang:end+overhang]).flatten()
+
+# 	return encoding
 
 def DNA_encoding(sequence, recLength = 5, overhang = 0):
 	"""
-	Takes a DNA sequence and converts it into a list of floats
-	where G = [-1,1], C = [1,-1], T = [1,1], A = [-1,-1]
+	One-hot encoding of DNA sequence and converts it into a list of floats
+	where A = [1,0,0,0], G = [0,1,0,0], C = [0,0,1,0], and T = [0,0,0,1]
 	"""
 	encoding = []
 
 	for bp in sequence:
 		bp = bp.capitalize()
 		if bp == 'A':
-			encoding.append([-1,-1])
-		elif bp == 'C':
-			encoding.append([1,-1])
+			encoding.append([1,0,0,0])
 		elif bp == 'G':
-			encoding.append([-1,1])
+			encoding.append([0,1,0,0])
+		elif bp == 'C':
+			encoding.append([0,0,1,0])
 		elif bp == 'T':
-			encoding.append([1,1])
+			encoding.append([0,0,0,1])
 
 	# pulling out feature indecies
 	middle = len(encoding)/2 + len(encoding)%2 - 1
 	start = middle - recLength/2
 	end = middle + recLength/2 + 1
 
-	encoding = np.array(encoding[start-overhang:end+overhang]).flatten()
+	encoding = np.array(encoding[start-overhang:end+overhang])
+	#.flatten()
 
 	return encoding
 
