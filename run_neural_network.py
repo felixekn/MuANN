@@ -29,6 +29,7 @@ DNA_BsAK, recSite_BsAK, freq_BsAK = DNAm.array("Data/BsAK_unselected_NucleotideP
 DNA_BgAK, recSite_BgAK, freq_BgAK = DNAm.array("Data/BgAK_unselected_NucleotidePositionCounts.csv")
 
 # Training and test outputs
+print('Splitting data into Training/Test...')
 freq = np.array([[x] for x in freq_GsAK + freq_BsAK + freq_BgAK])
 freqTest = np.array([[x] for x in freq_TnAK])
 
@@ -40,25 +41,40 @@ scaledTestOutput, binendTestOutput = network.categorize(freqTest, 0, 15000, 10)
 DNA = DNA_GsAK + DNA_BsAK + DNA_BgAK
 DNATest = DNA_TnAK
 
+print('Encoding data...')
+
+print('\t One-hot sequence')
+encodedRecSiteTraining = [DNAm.DNA_encoding(seq, overhang = 0) for seq in DNA]
+encodedRecSiteTest = [DNAm.DNA_encoding(seq, overhang = 0) for seq in DNATest]
+print(np.shape(np.array(encodedRecSiteTraining[1])))
+print('\t GC content')
 GC_averageTraining = [DNAm.GC_content(seq, overhang = 7)[2] for seq in DNA]
 GC_averageTest = [DNAm.GC_content(seq, overhang = 7)[2] for seq in DNATest]
 
+print('\t Propeller twist')
 propellerTraining = [DNAm.propeller(seq, overhang = 7)[2] for seq in DNA]
 propellerTest = [DNAm.propeller(seq, overhang = 7)[2] for seq in DNATest]
 
+print('\t Roll')
 rollTraining = [DNAm.roll(seq, overhang = 0)[2] for seq in DNA]
 rollTest = [DNAm.roll(seq, overhang = 0)[2] for seq in DNATest]
 
+print('\t Helix twist')
 helixTraining = [DNAm.helixTwist(seq, overhang = 0)[2] for seq in DNA]
 helixTest = [DNAm.helixTwist(seq, overhang = 0)[2] for seq in DNATest]
 
+print('\t Groove')
 grooveTraining = [DNAm.minorGroove(seq, overhang = 0)[2] for seq in DNA]
 grooveTest = [DNAm.minorGroove(seq, overhang = 0)[2] for seq in DNATest]
 
-encodedRecSiteTraining = [DNAm.DNA_encoding(seq, overhang = 0) for seq in DNA]
-encodedRecSiteTest = [DNAm.DNA_encoding(seq, overhang = 0) for seq in DNATest]
-
 # concatenating input training data
+print(np.shape(np.array(encodedRecSiteTraining)))
+print(np.shape(np.array(GC_averageTraining)))
+print(np.shape(np.array(propellerTraining)))
+print(np.shape(np.array(rollTraining)))
+print(np.shape(np.array(helixTraining)))
+print(np.shape(np.array(grooveTraining)))
+
 inputData = np.column_stack((GC_averageTraining, propellerTraining,
                              rollTraining, helixTraining, grooveTraining,
                              encodedRecSiteTraining))
