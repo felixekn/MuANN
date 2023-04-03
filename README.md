@@ -1,7 +1,5 @@
 # Transposon Insertion Frequency Prediction using an Artificial Neural Network
 
-Paragraph describing the scope of the software will be added shortly.
-
 ## Authors
 
 * **Joshua Atkinson** - *Initial work* -
